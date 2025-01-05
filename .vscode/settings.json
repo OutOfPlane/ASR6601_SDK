@@ -1,0 +1,23 @@
+{
+    "makefile.preConfigureScript": "./envsetup.bat",
+    "makefile.alwaysPreConfigure": true,
+    "makefile.configureOnOpen": false,
+    "files.associations": {
+        "tremo_uart.h": "c",
+        "stdio.h": "c",
+        "lora_config.h": "c",
+        "loramac.h": "c",
+        "sx126x.h": "c",
+        "tremo_delay.h": "c",
+        "lora.h": "c",
+        "stdint.h": "c",
+        "aes.h": "c",
+        "rtc-board.h": "c",
+        "sx126x-board.h": "c",
+        "loramactypes.h": "c",
+        "timer.h": "c",
+        "loramacclassbnvm.h": "c",
+        "secure-element-nvm.h": "c",
+        "loramaccryptonvm.h": "c"
+    }
+}

@@ -1,0 +1,10 @@
+Listings/
+Objects/
+*.uvguix.*
+out/
+**/out/*
+**/no_git_add*.*
+EventRecorderStub.scvd
+JLinkLog.txt
+JLinkSettings.ini
+build/scripts/__pycache__/

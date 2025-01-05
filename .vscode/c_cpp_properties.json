@@ -1,0 +1,57 @@
+{
+    "configurations": [
+        {
+            "name": "SDK",
+            "intelliSenseMode": "gcc-arm",
+            "includePath": [
+                "drivers/peripheral/inc",
+                "platform/system",
+                "platform/CMSIS",
+                "lora/radio",
+                "lora/radio/sx126x",
+                "lora/system",
+                "lora/system/crypto",
+                "lora/mac",
+                "lora/mac/region",
+                "lora/linkwan/inc",
+                "lora/driver"
+            ],
+            "defines": [
+                "DRAGINO_LA66",
+                "REGION_EU868",
+                "CONFIG_LORA_USE_TCXO"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "compilerPath": "D:/Projekte/Visioverdis/LORA-IOT/SensorNode/asr_lora_6601/tools/toolchain/bin/arm-none-eabi-g++.exe"
+        },
+        {
+            "name": "example_LoRaWAN_example",
+            "intelliSenseMode": "gcc-arm",
+            "includePath": [
+                "drivers/peripheral/inc",
+                "platform/system",
+                "platform/CMSIS",
+                "lora/radio",
+                "lora/radio/sx126x",
+                "lora/system",
+                "lora/system/crypto",
+                "lora/mac",
+                "lora/mac/region",
+                "lora/linkwan/inc",
+                "lora/driver",
+                "projects/LoRaWAN_example/inc"
+            ],
+            "defines": [
+                "DRAGINO_LA66",
+                "REGION_EU868",
+                "CONFIG_LORA_USE_TCXO"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "compilerPath": "D:/Projekte/Visioverdis/LORA-IOT/SensorNode/asr_lora_6601/tools/toolchain/bin/arm-none-eabi-g++.exe"
+        }
+    ],
+    "version": 4,
+    "enableConfigurationSquiggles": true
+}

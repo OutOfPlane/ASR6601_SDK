@@ -11,7 +11,8 @@ uint8_t getBatteryLevel();
 float getTemperature();
 
 extern void LoRaMacTestRxWindowsOn(bool enable);
-extern void onLoraJoined();
+extern void onLoRaJoined();
+extern void onLoRaTxRxDone(Mcps_t type, LoRaMacEventInfoStatus_t status, bool ackReceived, uint32_t channel, uint8_t dataRate, int8_t txPower, TimerTime_t txTimeOnAir);
 
 // why??
 uint8_t decrypt_flag = 0;
@@ -58,7 +59,6 @@ void init_lora(bool ADREnable, bool publicNetwork, LoraDeviceClass_t deviceClass
 
 bool lora_join_otaa(uint8_t *deviceEUI, uint8_t *appEUI, uint8_t *appKey)
 {
-    printf("lora_join_otaa\r\n");
     MlmeReq_t req;
     req.Type = MLME_JOIN;
     req.Req.Join.DevEui = deviceEUI;
@@ -68,12 +68,10 @@ bool lora_join_otaa(uint8_t *deviceEUI, uint8_t *appEUI, uint8_t *appKey)
 
     if (LoRaMacMlmeRequest(&req) == LORAMAC_STATUS_OK)
     {
-        printf("Request Successful\r\n");
         return true;
     }
     else
     {
-        printf("Request Failed\r\n");
         return false;
     }
 }
@@ -103,17 +101,16 @@ void lora_tx(uint8_t *buffer, uint8_t len)
 
 void McpsConfirm(McpsConfirm_t *data)
 {
-    printf("McpsConfirm\r\n");
+    onLoRaTxRxDone(data->McpsRequest, data->Status, data->AckReceived, data->Channel, data->Datarate, data->TxPower, data->TxTimeOnAir);
 }
 
 void McpsIndication(McpsIndication_t *data)
 {
-    printf("McpsIndication\r\n");
+    printf("McpsIndication type:%d\r\n", data->McpsIndication);    
 }
 
 void MlmeConfirm(MlmeConfirm_t *data)
 {
-    printf("MlmeConfirm\r\n");
 
     switch (data->MlmeRequest)
     {
@@ -122,7 +119,7 @@ void MlmeConfirm(MlmeConfirm_t *data)
         if (data->Status == LORAMAC_EVENT_INFO_STATUS_OK)
         {
             printf("JOIN Successful\r\n");
-            onLoraJoined();
+            onLoRaJoined();
         }
         else
         {
@@ -143,13 +140,14 @@ void MlmeConfirm(MlmeConfirm_t *data)
         break;
     }
     default:
+        printf("## MlmeConfirm - UNHANDELED MLME request type\r\n");
         break;
     }
 }
 
 void MlmeIndication(MlmeIndication_t *data)
 {
-    printf("MlmeIndication\r\n");
+    printf("MlmeIndication type:%d\r\n", data->MlmeIndication);
 }
 
 uint8_t getBatteryLevel()

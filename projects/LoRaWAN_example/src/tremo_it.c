@@ -200,6 +200,5 @@ void RTC_IRQHandler(void)
 
 void LORA_IRQHandler()
 {
-    printf("LORA IRQ\r\n");
     RadioOnDioIrq();
 }

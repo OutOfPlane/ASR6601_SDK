@@ -231,6 +231,7 @@ def tremo_flash(args):
     for address, filename in download_files:
         image_size = os.path.getsize(filename)
         image_checksum = get_crc32(filename)
+        print(f"Erasing: {address:08X}, size: {image_size}")
         tremo.erase(address, image_size)
 
         flash_addr = address

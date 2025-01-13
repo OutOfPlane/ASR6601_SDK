@@ -83,10 +83,10 @@ void lora_tx(uint8_t *buffer, uint8_t len)
     if (LoRaMacQueryTxPossible(len, &txinfo) != LORAMAC_STATUS_OK)
     {
         // Send empty frame in order to flush MAC commands
-		req.Type = MCPS_UNCONFIRMED;
-		req.Req.Unconfirmed.fBuffer = NULL;
-		req.Req.Unconfirmed.fBufferSize = 0;
-		req.Req.Unconfirmed.Datarate = 0;
+        req.Type = MCPS_UNCONFIRMED;
+        req.Req.Unconfirmed.fBuffer = NULL;
+        req.Req.Unconfirmed.fBufferSize = 0;
+        req.Req.Unconfirmed.Datarate = 0;
     }
     else
     {
@@ -99,6 +99,107 @@ void lora_tx(uint8_t *buffer, uint8_t len)
     LoRaMacMcpsRequest(&req);
 }
 
+void lora_saveSession(LoRaBackupData_t *data)
+{
+    data->valid = true;
+
+    MibRequestConfirm_t mib;
+    mib.Type = MIB_NWK_SKEY;
+    mib.Param.NwkSKey = NULL;
+
+    if (LoRaMacMibGetRequestConfirm(&mib) == LORAMAC_STATUS_OK)
+    {
+        for (size_t i = 0; i < 16; i++)
+        {
+            data->nkwSKey[i] = mib.Param.NwkSKey[i];
+        }
+    }else{
+        data->valid = false;
+        printf("unable to retrieve network SKey\r\n");
+    }
+
+    mib.Type = MIB_APP_SKEY;
+    mib.Param.AppSKey = NULL;
+    if (LoRaMacMibGetRequestConfirm(&mib) == LORAMAC_STATUS_OK)
+    {
+        for (size_t i = 0; i < 16; i++)
+        {
+            data->appSKey[i] = mib.Param.AppSKey[i];
+        }
+    }else{
+        data->valid = false;
+        printf("unable to retrieve app SKey\r\n");
+    }
+
+    mib.Type = MIB_NET_ID;
+    if (LoRaMacMibGetRequestConfirm(&mib) == LORAMAC_STATUS_OK)
+    {
+        data->netID = mib.Param.NetID;
+    }else{
+        data->valid = false;
+        printf("unable to retrieve net id\r\n");
+    }
+
+    mib.Type = MIB_DEV_ADDR;
+    if (LoRaMacMibGetRequestConfirm(&mib) == LORAMAC_STATUS_OK)
+    {
+        data->devAddr = mib.Param.DevAddr;
+    }else{
+        data->valid = false;
+        printf("unable to retrieve dev Addr\r\n");
+    }
+
+    mib.Type = MIB_UPLINK_COUNTER;
+    if (LoRaMacMibGetRequestConfirm(&mib) == LORAMAC_STATUS_OK)
+    {
+        data->uplinkCounter = mib.Param.UpLinkCounter;
+    }else{
+        data->valid = false;
+        printf("unable to retrieve uplink ctr\r\n");
+    }
+
+    mib.Type = MIB_DOWNLINK_COUNTER;
+    if (LoRaMacMibGetRequestConfirm(&mib) == LORAMAC_STATUS_OK)
+    {
+        data->downlinkCounter = mib.Param.DownLinkCounter;
+    }else{
+        data->valid = false;
+        printf("unable to retrieve downlink ctr\r\n");
+    }
+}
+
+void lora_restoreSession(LoRaBackupData_t *data)
+{
+    MibRequestConfirm_t mib;
+    mib.Type = MIB_NWK_SKEY;
+    mib.Param.NwkSKey = data->nkwSKey;
+    LoRaMacMibSetRequestConfirm(&mib);
+
+    mib.Type = MIB_APP_SKEY;
+    mib.Param.AppSKey = data->appSKey;
+    LoRaMacMibSetRequestConfirm(&mib);
+
+    mib.Type = MIB_NET_ID;
+    mib.Param.NetID = data->netID;
+    LoRaMacMibSetRequestConfirm(&mib);
+
+    mib.Type = MIB_DEV_ADDR;
+    mib.Param.DevAddr = data->devAddr;
+    LoRaMacMibSetRequestConfirm(&mib);
+
+    mib.Type = MIB_UPLINK_COUNTER;
+    mib.Param.UpLinkCounter = data->uplinkCounter;
+    LoRaMacMibSetRequestConfirm(&mib);
+
+    mib.Type = MIB_DOWNLINK_COUNTER;
+    mib.Param.DownLinkCounter = data->downlinkCounter;
+    LoRaMacMibSetRequestConfirm(&mib);
+
+    mib.Type = MIB_NETWORK_JOINED;
+    mib.Param.IsNetworkJoined = true;
+    LoRaMacMibSetRequestConfirm(&mib);
+}
+
 void McpsConfirm(McpsConfirm_t *data)
 {
     onLoRaTxRxDone(data->McpsRequest, data->Status, data->AckReceived, data->Channel, data->Datarate, data->TxPower, data->TxTimeOnAir);
@@ -106,7 +207,7 @@ void McpsConfirm(McpsConfirm_t *data)
 
 void McpsIndication(McpsIndication_t *data)
 {
-    printf("McpsIndication type:%d\r\n", data->McpsIndication);    
+    printf("McpsIndication type:%d\r\n", data->McpsIndication);
 }
 
 void MlmeConfirm(MlmeConfirm_t *data)

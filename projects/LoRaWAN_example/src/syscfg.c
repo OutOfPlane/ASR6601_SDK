@@ -3,6 +3,7 @@
 #include "tremo_gpio.h"
 #include "tremo_rtc.h"
 #include "lora_config.h"
+#include "syscfg.h"
 
 void init_uart(uint32_t baudrate)
 {
@@ -27,6 +28,8 @@ void init_gpio()
 {
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_GPIOB, true);
     gpio_init(LED_RGB_PORT, LED_RED_PIN, GPIO_MODE_OUTPUT_PP_LOW);
+    gpio_init(LED_RGB_PORT, LED_GREEN_PIN, GPIO_MODE_OUTPUT_PP_LOW);
+    gpio_init(LED_RGB_PORT, LED_BLUE_PIN, GPIO_MODE_OUTPUT_PP_LOW);
 }
 
 void init_rtc()
@@ -36,4 +39,18 @@ void init_rtc()
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_RTC, true);
     rtc_calendar_cmd(ENABLE);
     NVIC_EnableIRQ(RTC_IRQn);
+}
+void flushUart(uart_t* uartx)
+{
+    while (!(uartx->FR & UART_FLAG_TX_FIFO_EMPTY));    
+}
+
+void init_adc()
+{
+    rcc_set_adc_clk_source(RCC_ADC_CLK_SOURCE_PCLK1);
+	rcc_enable_peripheral_clk(RCC_PERIPHERAL_ADC, true);
+
+	adc_enable_vbat31(true);
+
+	adc_init();
 }

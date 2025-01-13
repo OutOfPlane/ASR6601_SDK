@@ -17,6 +17,7 @@ MEMORY
 {
     FLASH (rx)      :  ORIGIN = 0x08000000, LENGTH = 256K
     RAM (xrw)       :  ORIGIN = 0x20000000, LENGTH = 64k
+    NOINIT (xrw)    :  ORIGIN = 0x30000000, LENGTH = 1k
 }
 
 /* Define output sections */
@@ -119,6 +120,7 @@ SECTIONS
     __bss_end__ = _ebss;
   } >RAM
 
+
     /*********************************************************************************
      * Heap
      *********************************************************************************/  
@@ -143,6 +145,13 @@ SECTIONS
        . += _STACK_SIZE ;
        _stack_top = .;
     } >RAM 
+
+    .noinit(NOLOAD) :
+    {
+      KEEP(*(.noinitdata))
+    } >NOINIT
+
+    
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

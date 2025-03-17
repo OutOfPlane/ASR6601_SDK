@@ -18,6 +18,8 @@
         "timer.h": "c",
         "loramacclassbnvm.h": "c",
         "secure-element-nvm.h": "c",
-        "loramaccryptonvm.h": "c"
+        "loramaccryptonvm.h": "c",
+        "tremo_i2c.h": "c",
+        "syscfg.h": "c"
     }
 }

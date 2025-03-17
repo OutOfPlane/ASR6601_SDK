@@ -19,6 +19,9 @@ extern "C" {
 #define LED_RED_PIN    GPIO_PIN_13
 #define LED_GREEN_PIN  GPIO_PIN_14
 #define LED_BLUE_PIN   GPIO_PIN_12
+
+#define BOOST_EN_PORT   GPIOB
+#define BOOST_EN_PIN   GPIO_PIN_7
 #endif
 
 #ifdef __cplusplus

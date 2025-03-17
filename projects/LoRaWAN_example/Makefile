@@ -35,7 +35,7 @@ $(PROJECT)_LDFLAGS := -Wl,--gc-sections -specs=nosys.specs -specs=nano.specs #-W
 $(PROJECT)_LINK_LD := cfg/gcc.ld
 
 # please change the settings to download the app
-SERIAL_PORT        := /dev/ttyS6
+SERIAL_PORT        := /dev/ttyS2
 #SERIAL_BAUDRATE    :=
 #$(PROJECT)_ADDRESS :=
 

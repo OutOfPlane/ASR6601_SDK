@@ -57,7 +57,6 @@ void my_fault_handler_c(uint32_t *sp)
     printf("SCB->BFAR   0x%08lx\r\n", bfar);
     printf("\n");
 
-
     uint32_t r0 = sp[0];
     uint32_t r1 = sp[1];
     uint32_t r2 = sp[2];
@@ -76,9 +75,6 @@ void my_fault_handler_c(uint32_t *sp)
     printf("  LR          0x%08lx\r\n", lr);
     printf("  PC          0x%08lx\r\n", pc);
     printf("  PSR         0x%08lx\r\n", psr);
-    
-
-    
 
     while (1)
         ;
@@ -162,6 +158,7 @@ void SysTick_Handler(void)
  */
 void PWR_IRQHandler()
 {
+
 }
 
 /******************************************************************************/

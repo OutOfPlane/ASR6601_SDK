@@ -11,6 +11,7 @@
 #include "rtc-board.h"
 #include "tremo_adc.h"
 #include "tremo_i2c.h"
+#include "ads1115.h"
 
 uint8_t devEUI[] = MY_DEVEUI;
 uint8_t appEUI[] = MY_APPEUI;
@@ -64,9 +65,24 @@ int main(void)
     printf("--INITIALIZING HARDWARE\r\n");
     init_gpio();
     init_rtc();
+    init_i2c();
+    // wait for 5V to come up and sensors to stabalize
+    delay_ms(500);
     
     printf("--DONE\r\n\n");
-    // pwr_xo32k_lpm_cmd(true);
+
+    uint8_t ch_data[8];
+    uint32_t rx;
+    for (size_t i = 0; i < 4; i++)
+    {
+        rx = ads1115_readCh(i);
+        rx = rx*1875/10000;
+        ch_data[2*i] = rx & 0xFF;
+        ch_data[2*i+1] = (rx>>8) & 0xFF;
+    }
+    
+
+
 
     if (RCC->RST_SR & RCC_RST_SR_BOR_RESET_SR)
     {
@@ -107,7 +123,7 @@ int main(void)
     }
 
     TimerInit(&deepSleepTimeout, onDeepSleepWakeup);
-    TimerSetValue(&deepSleepTimeout, 20000); // 20s interval for measurements
+    TimerSetValue(&deepSleepTimeout, 600000); // 10min interval for measurements
 
     char buf[30];
     int buflen;
@@ -123,13 +139,10 @@ int main(void)
             break;
         case STATE_IDLE:
             printf("Sending LoRa MSG\r\n");
-            buflen = sprintf(buf, "Bat: %d ADC: %d", HW_GetBatteryLevel(), HW_readADC());
-            if (buflen > 0)
-            {
-                lora_tx(buf, buflen);
-                cState = STATE_RXTX;
-                gpio_write(LED_RGB_PORT, LED_GREEN_PIN, GPIO_LEVEL_HIGH);
-            }
+
+            lora_tx(ch_data, sizeof(ch_data));
+            cState = STATE_RXTX;
+            gpio_write(LED_RGB_PORT, LED_GREEN_PIN, GPIO_LEVEL_HIGH);
 
             break;
 
@@ -137,6 +150,7 @@ int main(void)
             TimerStart(&deepSleepTimeout);
             lora_saveSession(&loraSession);
             printf("Entering deepsleep\r\n");
+            gpio_write(BOOST_EN_PORT, BOOST_EN_PIN, GPIO_LEVEL_HIGH);
             // wait for Uart to finish
             flushUart();
             RtcEnterLowPowerStopMode();

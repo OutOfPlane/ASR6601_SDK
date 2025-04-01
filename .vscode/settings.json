@@ -20,6 +20,7 @@
         "secure-element-nvm.h": "c",
         "loramaccryptonvm.h": "c",
         "tremo_i2c.h": "c",
-        "syscfg.h": "c"
+        "syscfg.h": "c",
+        "tremo_rcc.h": "c"
     }
 }

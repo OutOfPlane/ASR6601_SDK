@@ -1,4 +1,5 @@
 #include "tremo_uart.h"
+#include "tremo_i2c.h"
 #include "tremo_rcc.h"
 #include "tremo_gpio.h"
 #include "tremo_rtc.h"
@@ -30,19 +31,39 @@ void init_gpio()
     gpio_init(LED_RGB_PORT, LED_RED_PIN, GPIO_MODE_OUTPUT_PP_LOW);
     gpio_init(LED_RGB_PORT, LED_GREEN_PIN, GPIO_MODE_OUTPUT_PP_LOW);
     gpio_init(LED_RGB_PORT, LED_BLUE_PIN, GPIO_MODE_OUTPUT_PP_LOW);
-    gpio_init(BOOST_EN_PORT, BOOST_EN_PIN, GPIO_MODE_OUTPUT_PP_HIGH);
+    gpio_init(BOOST_EN_PORT, BOOST_EN_PIN, GPIO_MODE_OUTPUT_PP_LOW);
 }
 
 void init_rtc()
 {
+    //this is important for wakeup to work
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_PWR, true);
+
     rcc_set_rtc_clk_source(RCC_RTC_CLK_SOURCE_XO32K);
     rcc_enable_oscillator(RCC_OSC_XO32K, true);
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_RTC, true);
     rtc_calendar_cmd(ENABLE);
     NVIC_EnableIRQ(RTC_IRQn);
 }
+
 void flushUart()
 {
     while (!(UART0->FR & UART_FLAG_TX_FIFO_EMPTY));    
+}
+
+void init_i2c()
+{
+    rcc_enable_peripheral_clk(RCC_PERIPHERAL_GPIOA, true);
+    rcc_enable_peripheral_clk(RCC_PERIPHERAL_I2C0, true);
+
+    gpio_set_iomux(GPIOA, GPIO_PIN_14, 3);
+    gpio_set_iomux(GPIOA, GPIO_PIN_15, 3);
+
+    i2c_config_t cfg;
+    i2c_config_init(&cfg);
+    cfg.fifo_mode_en = false;
+    cfg.mode = I2C_MODE_MASTER;
+    cfg.settings.master.speed = I2C_SPEED_FAST;
+    i2c_init(I2C0, &cfg);
+    i2c_cmd(I2C0, ENABLE);
 }

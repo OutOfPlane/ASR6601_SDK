@@ -12,6 +12,7 @@ float getTemperature();
 
 extern void LoRaMacTestRxWindowsOn(bool enable);
 extern void onLoRaJoined();
+extern void onLoRaJoinError();
 extern void onLoRaTxRxDone(Mcps_t type, LoRaMacEventInfoStatus_t status, bool ackReceived, uint32_t channel, uint8_t dataRate, int8_t txPower, TimerTime_t txTimeOnAir);
 
 // why??
@@ -225,6 +226,7 @@ void MlmeConfirm(MlmeConfirm_t *data)
         else
         {
             printf("JOIN Failed, Status: %d\r\n", data->Status);
+            onLoRaJoinError();
         }
         break;
     }

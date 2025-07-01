@@ -28,10 +28,13 @@ void init_uart(uint32_t baudrate)
 void init_gpio()
 {
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_GPIOB, true);
+    rcc_enable_peripheral_clk(RCC_PERIPHERAL_GPIOC, true);
+
     gpio_init(LED_RGB_PORT, LED_RED_PIN, GPIO_MODE_OUTPUT_PP_LOW);
     gpio_init(LED_RGB_PORT, LED_GREEN_PIN, GPIO_MODE_OUTPUT_PP_LOW);
     gpio_init(LED_RGB_PORT, LED_BLUE_PIN, GPIO_MODE_OUTPUT_PP_LOW);
     gpio_init(BOOST_EN_PORT, BOOST_EN_PIN, GPIO_MODE_OUTPUT_PP_LOW);
+    gpio_init(BUTTON_PORT, BUTTON_PIN, GPIO_MODE_INPUT_FLOATING);
 }
 
 void init_rtc()

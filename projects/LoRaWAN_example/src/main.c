@@ -50,10 +50,27 @@ void onLoRaJoined()
     cState = STATE_IDLE;
 }
 
+void onLoRaJoinError()
+{
+    printf("LoRaWAN join failed\r\n");
+    gpio_write(LED_RGB_PORT, LED_BLUE_PIN, GPIO_LEVEL_LOW);
+    gpio_write(LED_RGB_PORT, LED_RED_PIN, GPIO_LEVEL_HIGH);
+    delay_ms(1000);
+    gpio_write(LED_RGB_PORT, LED_RED_PIN, GPIO_LEVEL_LOW);
+    cState = STATE_SLEEP;
+}
+
 void onLoRaTxRxDone(Mcps_t type, LoRaMacEventInfoStatus_t status, bool ackReceived, uint32_t channel, uint8_t dataRate, int8_t txPower, TimerTime_t txTimeOnAir)
 {
     cState = STATE_SLEEP;
     gpio_write(LED_RGB_PORT, LED_GREEN_PIN, GPIO_LEVEL_LOW);
+    if(status != LORAMAC_EVENT_INFO_STATUS_OK) {
+        gpio_write(LED_RGB_PORT, LED_RED_PIN, GPIO_LEVEL_HIGH);
+        delay_ms(1000);
+        gpio_write(LED_RGB_PORT, LED_RED_PIN, GPIO_LEVEL_LOW);
+    }else{
+        lora_saveSession(&loraSession);
+    }
     printf("RXTX Done\r\n");
     printf(" MCPS: %d\r\n STATUS: %d\r\n ACK: %d\r\n CH: %ld\r\n DR: %d\r\n TXPOW: %d\r\n TxTOA: %ld\r\n\n", type, status, ackReceived, channel, dataRate, txPower, (uint32_t)txTimeOnAir);
 }
@@ -70,6 +87,8 @@ int main(void)
     delay_ms(500);
     
     printf("--DONE\r\n\n");
+
+    gpio_config_stop3_wakeup(BUTTON_PORT, BUTTON_PIN, true, GPIO_LEVEL_LOW);
 
     uint8_t ch_data[8];
     uint32_t rx;
@@ -148,12 +167,12 @@ int main(void)
 
         case STATE_SLEEP:
             TimerStart(&deepSleepTimeout);
-            lora_saveSession(&loraSession);
             printf("Entering deepsleep\r\n");
             gpio_write(BOOST_EN_PORT, BOOST_EN_PIN, GPIO_LEVEL_HIGH);
             // wait for Uart to finish
             flushUart();
             RtcEnterLowPowerStopMode();
+            onDeepSleepWakeup();
             break;
 
         default:

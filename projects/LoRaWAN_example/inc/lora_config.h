@@ -22,6 +22,12 @@ extern "C" {
 
 #define BOOST_EN_PORT   GPIOB
 #define BOOST_EN_PIN   GPIO_PIN_7
+
+#define BUTTON_PORT   GPIOC
+#define BUTTON_PIN   GPIO_PIN_8
+
+#define BLE_RST_PORT GPIOD
+#define BLE_RST_PIN  GPIO_PIN_10
 #endif
 
 #ifdef __cplusplus
